@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="description" content="">
+      <meta name="keywords" content="">
+      <meta name="author" content="">
+      <link rel="stylesheet" type="text/css" href="./shop_files/style.css" media="screen">
+      <script src="addressconfig.js"></script>
+      <title> - Shop</title>
+   </head>
+   <body>
+      <div id="wrapper">
+         <div id="container">
+            <div class="title">
+               <h1><a href="http://hellblazer.servegame.com/shopsystem/"> - Shop</a></h1>
+            </div>
+            <div class="header"></div>
+            <div class="navigation">
+               <a href="/logout"><b>Logout</b></a>				
+               <a href="index.php?subtopic=shopsystem"><b>Trocar Hellcoins</b></a>
+               <a href="index.php?subtopic=shopsystem&action=transfercoins"><b>Transferir Hellcoins</b></a>
+               <a href="index.php?subtopic=shopsystem&action=changename"><b>Change Name</b></a>
+               <a href="index.php?subtopic=shopsystem&action=show_history"><b>Histórico</b></a>						
+               <a style="color: red; font-weight: bold;" href="index.php?subtopic=shopsystem&action=trocar_event_tokens&step=1">Trocar Event Tokens</a>
+               <div class="clearer"></div>
+            </div>
+            <div class="main">
+                <div class="container-player-select">
+                    Selecione o personagem que irá receber o item: <br><br>
+
+                    <select name="players" id="players">
+                    </select>
+
+                    <br>
+
+                    <button class="confirm-buyiment">Confirmar</button>
+                </div>
+               <div class="footer">
+                  <div class="left">
+                     Sistema elaborado por Gesior. Editado, traduzido e corrigido por Nokia.
+                  </div>
+                  <div class="right">
+                     <a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a>
+                  </div>
+                  <div class="clearer"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </body>
+   <script>
+      function initCombo(){
+         var xhr = new XMLHttpRequest(),
+            select = document.getElementsByName('players')[0];
+
+         xhr.open('POST', Config.urlApi + 'buyitem');
+
+         xhr.send(JSON.stringify({
+            iditem: 1
+         }));
+
+         xhr.onreadystatechange = function(){
+            if(!xhr.responseText || xhr.status !== 200 || xhr.readyState !== 4) return;
+            
+               var jsonResult = JSON.parse(xhr.responseText),
+                  optionAsString = '';
+
+               jsonResult.forEach((player) => {
+                  var option = document.createElement('option');
+                  
+                  option.text = player.name;
+                  option.value = player.id;
+
+                  select.append( option );
+               });
+         }
+      }
+
+      function listenConfirm(){
+         var btnConfirm = document.getElementsByClassName('confirm-buyiment')[0],
+            select = document.getElementsByName('players')[0];
+
+         if(!btnConfirm) return;
+
+         btnConfirm.onclick = function(){
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', Config.urlApi + 'makepurch');
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+            xhr.send(JSON.stringify({
+               idplayer: select.value
+            }));
+
+            xhr.onreadystatechange = function(){
+               if(!xhr.responseText || xhr.status !== 200 || xhr.readyState !== 4) return;
+               
+               alert('Compra realizada com sucesso!');
+            }
+         };
+      }
+
+      initCombo();
+      listenConfirm();
+
+   </script>
+</html>
